@@ -58,9 +58,12 @@ func TestWrite(t *testing.T) {
 	var buf bytes.Buffer
 	w := bufio.NewWriter(&buf)
 
-	err = Write(w, &msg)
+	bytesWritten, err := Write(w, &msg)
 	if err != nil {
 		t.Fatalf("Write() returned err: %+v", err)
+	}
+	if bytesWritten != int64(length+4) {
+		t.Fatalf("Write() did not return correct number of bytes written")
 	}
 	w.Flush()
 

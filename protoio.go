@@ -29,22 +29,22 @@ func Read(r io.Reader, msg proto.Message) error {
 	return proto.Unmarshal(readBytes, msg)
 }
 
-// Write writes the msg to w.
+// Write writes the msg to w and returns the total number of bytes written.
 //
 // This function will first write the length of the message in big endian
 // followed by the binary data representing the protobuf message.
-func Write(w io.Writer, msg proto.Message) error {
+func Write(w io.Writer, msg proto.Message) (int64, error) {
 	out, err := proto.Marshal(msg)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	err = binary.Write(w, binary.BigEndian, int32(len(out)))
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	_, err = w.Write(out)
+	byteCount, err := w.Write(out)
 
-	return err
+	return int64(byteCount + 4), err
 }
